@@ -1,0 +1,22 @@
+{
+  "wda_url": "http://127.0.0.1:8100",
+  "bundle_id": "",
+  "runs": 0,
+  "connect_timeout": 45,
+  "threshold": 0.85,
+  "shot_interval": 0.4,
+  "tap_jitter_pt": 1,
+  "step_wait": 0.8,
+  "loop_delay": 3,
+  "fail_pause": 10,
+  "popups": ["popup_ok", "popup_close"],
+  "flow": [
+    { "template": "nav_pvp", "timeout": 10, "wait": 2.5 },
+    { "template": "tab_auto_match", "timeout": 10, "wait": 2.0 },
+    { "template": "btn_enter", "timeout": 10, "wait": 3.0 },
+    { "template": "btn_auto_toggle", "timeout": 25, "wait": 1.0 },
+    { "wait": 60 },
+    { "template": "btn_result_ok", "timeout": 180, "wait": 2.0 },
+    { "template": "btn_rematch", "timeout": 15, "wait": 3.0, "optional": true }
+  ]
+}
