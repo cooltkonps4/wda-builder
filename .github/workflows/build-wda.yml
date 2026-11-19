@@ -1,0 +1,47 @@
+name: build WDA ipa
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
+      - name: Clone WebDriverAgent
+        run: git clone --depth 1 https://github.com/appium/WebDriverAgent.git
+
+      - name: Build for testing (unsigned)
+        run: |
+          cd WebDriverAgent
+          xcodebuild build-for-testing \
+            -project WebDriverAgent.xcodeproj \
+            -scheme WebDriverAgentRunner \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      - name: Package Payload app into an ipa
+        run: |
+          set -euo pipefail
+          APP=$(find WebDriverAgent/build/Build/Products/Debug-iphoneos \
+                  -maxdepth 1 -name '*.app' | head -n 1)
+          echo "app bundle: $APP"
+          test -n "$APP"
+          mkdir -p out/Payload
+          cp -R "$APP" out/Payload/
+          cd out
+          zip -qry WDA-unsigned.ipa Payload
+          ls -lh WDA-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WDA-unsigned-ipa
+          path: out/WDA-unsigned.ipa
+          if-no-files-found: error
